@@ -36,12 +36,10 @@ class sipm:
 
     def getDCR(self, OV):
         testgraph = ROOT.TGraphErrors()
-        testgraph.SetTitle(self.SN)
+        name = self.SN + ' at ' + str(OV) + 'V overvoltage'
+        testgraph.SetTitle(name)
         testgraph.GetXaxis().SetTitle('Temperature (C)')
-        testgraph.GetYaxis().SetTitle('Dark current (A)')
-        self.DCRgraph.SetTitle(self.SN)
-        self.DCRgraph.GetXaxis().SetTitle('Temperature (C)')
-        self.DCRgraph.GetYaxis().SetTitle('Dark current (A)')
+        testgraph.GetYaxis().SetTitle('Dark current (mA)')
         Idark = []
         V = []
         T = []
@@ -56,19 +54,19 @@ class sipm:
             V.append((round(2*(OV + self.Vb_T.Eval(Tdata[0],0,0,0))))/2)
         f = open(self.IVfilelist,'r')
         for line in f:
-#            self.DCRgraph.append(ROOT.TGraphErrors())
             Idark.append(findIdark(line.strip(),V[i]))
-            self.DCRgraph.SetPoint(i,T[i], Idark[i])
-            testgraph.SetPoint(i,T[i], Idark[i])
-            testgraph.SetPointError(i, T_sigma[i], 0.1*Idark[i])
-            self.DCRgraph.SetPointError(i, T_sigma[i], 0.1*Idark[i])
+            testgraph.SetPoint(i,T[i], 1000*Idark[i])
+            testgraph.SetPointError(i, T_sigma[i], 100*Idark[i])
             i += 1
         return testgraph
             
 def darkplot(sipm,OVa):
     glist = []
     mg = ROOT.TMultiGraph()
-    mg.SetTitle('Temperature vs Dark Current; Temperature (C); Dark Current (A)') 
+    name = 'SiPM '+ sipm.SN + ' at ' + sipm.dose + ' Neq'
+    mg.SetTitle(name)
+    mg.GetXaxis().SetTitle('Temperature (C)')
+    mg.GetYaxis().SetTitle('Dark Current (mA)')
     for v in OVa:
         glist.append(sipm.getDCR(v))
 
@@ -98,36 +96,47 @@ s9 = sipm('HPK_2917', '0.0', 'HPK_2917_IVfilelist.txt', 'HPK_2917_Tfilelist.txt'
 
 ROOT.gStyle.SetOptFit()
 
-s5.makeGraph()
-s3.makeGraph()
-s1.makeGraph()
+slist = [s1, s2, s3, s4, s5, s6, s7, s8, s9]
 
-s2.makeGraph()
-s4.makeGraph()
-s6.makeGraph()
+for s in slist:
+    s.makeGraph()
+#s5.makeGraph()
+#s3.makeGraph()
+#s1.makeGraph()
 
-s7.makeGraph()
-s8.makeGraph()
-s9.makeGraph()
+#s2.makeGraph()
+#s4.makeGraph()
+#s6.makeGraph()
 
+#s7.makeGraph()
+#s8.makeGraph()
+#s9.makeGraph()
 
+leglist = []
+mglist = []
+clist = []
 OV = [1.0, 2.0, 3.0, 4.0]
-g6 = []
-g6.append(s6.getDCR(1.0))
-g6.append(s6.getDCR(2.0))
-g6.append(s6.getDCR(3.0))
 
-for i in range(len(g6)):
-    g6[i].SetMarkerColor(i+1)
-    g6[i-1].SetLineColor(i+1)
-    s6.DCRmgraph.Add(g6[i])
+
+for i in range(0,len(slist)):
+    #slist[i].makeGraph()
+    mglist.append(darkplot(slist[i], OV))
+    clist.append(ROOT.TCanvas(slist[i].SN,slist[i].SN,500,500))
+    clist[i].SetLogy()
+    mglist[i].Draw('Aep')
     
-ctest = ROOT.TCanvas('ctest', 'ctest', 500, 500)
-s6.DCRmgraph.Draw('Aep')
+#mg1 = darkplot(s1,OV)
+#mg2 = darkplot(s2,OV)
+#mg3 = darkplot(s3,OV)
+#mg4 = darkplot(s4,OV)
+#mg5 = darkplot(s5,OV)
+#mg6 = darkplot(s6,OV)
+#mg7 = darkplot(s7,OV)
+#mg8 = darkplot(s8,OV)
+#mg9 = darkplot(s9,OV)
 
-mg6 = darkplot(s4,OV)
-c12 = ROOT.TCanvas('c12','c12', 500, 500)
-mg6.Draw('Aep')
+#c12 = ROOT.TCanvas('c12','c12', 500, 500)
+#mg6.Draw('Aep')
 #findT returns T[0]=mean temp and T[1]=error on mean
 
 
