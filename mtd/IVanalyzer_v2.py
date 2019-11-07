@@ -36,7 +36,7 @@ class sipm:
 
     def getDCR(self, OV):
         testgraph = ROOT.TGraphErrors()
-        name = self.SN + ' at ' + str(OV) + 'V overvoltage'
+        name = str(OV) + 'V overvoltage'
         testgraph.SetTitle(name)
         testgraph.GetXaxis().SetTitle('Temperature (C)')
         testgraph.GetYaxis().SetTitle('Dark current (mA)')
@@ -74,6 +74,7 @@ def darkplot(sipm,OVa):
         glist[i].SetMarkerColor(i+1)
         glist[i].SetLineColor(i+1)
         mg.Add(glist[i])
+    
     return mg
         
 
@@ -112,18 +113,20 @@ for s in slist:
 #s8.makeGraph()
 #s9.makeGraph()
 
-leglist = []
 mglist = []
 clist = []
 OV = [1.0, 2.0, 3.0, 4.0]
 
+fileout = ROOT.TFile('DCR_temperature.root','RECREATE')
 
 for i in range(0,len(slist)):
-    #slist[i].makeGraph()
     mglist.append(darkplot(slist[i], OV))
     clist.append(ROOT.TCanvas(slist[i].SN,slist[i].SN,500,500))
     clist[i].SetLogy()
     mglist[i].Draw('Aep')
+    clist[i].BuildLegend(0.1,0.7,0.48,0.9,'','lep')
+    fileout.cd()
+    clist[i].Write()
     
 #mg1 = darkplot(s1,OV)
 #mg2 = darkplot(s2,OV)
