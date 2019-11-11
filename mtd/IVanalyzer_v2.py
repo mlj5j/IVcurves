@@ -59,7 +59,8 @@ class sipm:
             testgraph.SetPointError(i, T_sigma[i], 100*Idark[i])
             i += 1
         return testgraph
-            
+
+    
 def darkplot(sipm,OVa):
     glist = []
     mg = ROOT.TMultiGraph()
@@ -104,11 +105,20 @@ for s in slist:
 
 mglist = []
 clist = []
-OV = [1.0, 2.0, 3.0, 4.0]
 
+OV = [1.0, 2.0, 3.0, 4.0]
+mgdose1V = ROOT.TMultiGraph()
+gdose1V = []
 fileout = ROOT.TFile('DCR_temperature.root','RECREATE')
 
+
 for i in range(0,len(slist)):
+    gdose1V.append(slist[i].getDCR(1.0))
+    gdose1V[i].SetLineColor(i+1)
+    gdose1V[i].SetMarkerColor(i+1)
+    tempname = slist[i].SN + ' at ' +  slist[i].dose + ' Neq'
+    gdose1V[i].SetTitle(tempname)
+    mgdose1V.Add(gdose1V[i])
     mglist.append(darkplot(slist[i], OV))
     clist.append(ROOT.TCanvas(slist[i].SN,slist[i].SN,500,500))
     clist[i].SetLogy()
@@ -116,6 +126,13 @@ for i in range(0,len(slist)):
     clist[i].BuildLegend(0.1,0.7,0.48,0.9,'','lep')
     fileout.cd()
     clist[i].Write()
+
+mgdose1V.SetTitle('Dark current at 1V OV; Temperature (C); Dark current (mA)')
+
+c1V = ROOT.TCanvas('c1V', 'c1V', 500, 500)
+mgdose1V.Draw('Aep')
+c1V.SetLogy()
+c1V.BuildLegend(0.1,0.7,0.48,0.9,'','lep')
     
 #Make canvas and draw
 if quiet==0:
