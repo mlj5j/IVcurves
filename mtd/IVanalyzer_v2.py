@@ -101,17 +101,6 @@ slist = [s1, s2, s3, s4, s5, s6, s7, s8, s9]
 
 for s in slist:
     s.makeGraph()
-#s5.makeGraph()
-#s3.makeGraph()
-#s1.makeGraph()
-
-#s2.makeGraph()
-#s4.makeGraph()
-#s6.makeGraph()
-
-#s7.makeGraph()
-#s8.makeGraph()
-#s9.makeGraph()
 
 mglist = []
 clist = []
@@ -128,21 +117,6 @@ for i in range(0,len(slist)):
     fileout.cd()
     clist[i].Write()
     
-#mg1 = darkplot(s1,OV)
-#mg2 = darkplot(s2,OV)
-#mg3 = darkplot(s3,OV)
-#mg4 = darkplot(s4,OV)
-#mg5 = darkplot(s5,OV)
-#mg6 = darkplot(s6,OV)
-#mg7 = darkplot(s7,OV)
-#mg8 = darkplot(s8,OV)
-#mg9 = darkplot(s9,OV)
-
-#c12 = ROOT.TCanvas('c12','c12', 500, 500)
-#mg6.Draw('Aep')
-#findT returns T[0]=mean temp and T[1]=error on mean
-
-
 #Make canvas and draw
 if quiet==0:
     c9 = ROOT.TCanvas('c9', 'c9', 500, 500)
